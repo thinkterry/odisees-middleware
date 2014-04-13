@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 import odisees.core.ParameterCase;
 import odisees.core.VariableCase;
-import odisees.utils.Utils;
+import odisees.utils.App;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -23,5 +23,5 @@ public class TestSuite {
 	public static void setup() throws FileNotFoundException {
 		String local= "src/test/resources/test.ttl";
 		FileInputStream fis= new FileInputStream(new File(local));
-		Utils.localService= ModelFactory.createDefaultModel();
-		Utils.localService.read(fis, null, "TTL"); }}
+		App.localService= ModelFactory.createDefaultModel();
+		App.localService.read(fis, null, "TTL"); }}

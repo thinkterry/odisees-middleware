@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import odisees.utils.Utils;
+import odisees.utils.App;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
@@ -16,7 +16,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 public class Parameter { 
-	private static String generalQuery= Utils.prefix+
+	private static String generalQuery= App.prefix+
 			"select distinct ?pcTerm ?pcName { "+ 
 			"?pcUri a :ODISEESCategory ; "+
 			"rdfs:label ?pcName . "+
@@ -25,7 +25,7 @@ public class Parameter {
 			"bind (strafter(str(?pcUri), '#') as ?pcTerm) "+
 			"} order by desc(?pcName)";
 
-	private static String detailedQuery(String parameterTerm) { return  Utils.prefix+
+	private static String detailedQuery(String parameterTerm) { return  App.prefix+
 			"select ?pcTerm ?filterTerm ?valueTerm ?filterName ?valueName (count(?varUri) as ?num) { "+
 			"bind('"+parameterTerm+"' as ?pcTerm) . "+
 			"?filterUri :searchFilterFor :"+parameterTerm+" . "+
@@ -47,14 +47,17 @@ public class Parameter {
 			"} group by ?pcTerm ?filterTerm ?valueTerm ?filterName ?valueName "+
 			"having (count(?varUri) > 0) "; }
 
-	public static JsonObject list(String parameterTerm, String remoteService) {
+	public static JsonObject list(String parameterTerm, String keyword, 
+			Map<String, String[]> filters, String remoteService) {
 		JsonObject result= new JsonObject();
 		if (parameterTerm == null) {
-			ResultSet genRs= Utils.query(generalQuery, remoteService);
+			ResultSet genRs= App.query(generalQuery, remoteService);
 			result.put("parameters", format(genRs)); }
 		else { 
-			ResultSet genRs= Utils.query(generalQuery, remoteService);
-			ResultSet detRs= Utils.query(detailedQuery(parameterTerm), remoteService);
+			String query= detailedQuery(parameterTerm);
+			String filteredQuery= App.filter(query, filters, "?varUri", keyword);
+			ResultSet genRs= App.query(generalQuery, remoteService);
+			ResultSet detRs= App.query(filteredQuery, remoteService);
 			result.put("parameters", format(genRs, detRs)); }
 		return result; }
 
@@ -63,8 +66,8 @@ public class Parameter {
 		Map<String, String> names= new HashMap<String, String>();
 		while (rs.hasNext()) { 
 			QuerySolution qs= rs.nextSolution();
-			params.add(Utils.str("pcTerm", qs));
-			names.put(Utils.str("pcTerm", qs), Utils.str("pcName", qs)); }
+			params.add(App.str("pcTerm", qs));
+			names.put(App.str("pcTerm", qs), App.str("pcName", qs)); }
 		JsonArray results= new JsonArray();
 		for (String p : params) {
 			JsonObject param= new JsonObject();
@@ -82,15 +85,15 @@ public class Parameter {
 		Map<String, Integer> valueCounts= new HashMap<String, Integer>();
 		while (general.hasNext()) { 
 			QuerySolution qs= general.nextSolution();
-			params.add(Utils.str("pcTerm", qs));
-			names.put(Utils.str("pcTerm", qs), Utils.str("pcName", qs)); }
+			params.add(App.str("pcTerm", qs));
+			names.put(App.str("pcTerm", qs), App.str("pcName", qs)); }
 		while (detailed.hasNext()) {
 			QuerySolution qs= detailed.nextSolution();
-			String pcTerm= Utils.str("pcTerm", qs);
-			String filterTerm= Utils.str("filterTerm", qs);
-			String valueTerm= Utils.str("valueTerm", qs);
-			String filterName= Utils.str("filterName", qs);
-			String valueName= Utils.str("valueName", qs);
+			String pcTerm= App.str("pcTerm", qs);
+			String filterTerm= App.str("filterTerm", qs);
+			String valueTerm= App.str("valueTerm", qs);
+			String filterName= App.str("filterName", qs);
+			String valueName= App.str("valueName", qs);
 			Integer num= qs.getLiteral("num").getInt();
 			names.put(filterTerm, filterName);
 			names.put(valueTerm, valueName);

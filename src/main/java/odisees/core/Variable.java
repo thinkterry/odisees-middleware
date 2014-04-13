@@ -13,10 +13,10 @@ import org.apache.jena.atlas.lib.MultiMapToSet;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-import odisees.utils.Utils;
+import odisees.utils.App;
 
 public class Variable {
-	private static String query(String parameterTerm) { return Utils.prefix+
+	protected static String query(String parameterTerm) { return App.prefix+
 			"select ?vnTerm ?vnName "+ 
 			"       ?varTerm ?description "+ 
 			"       ?projectTerm ?projectName "+ 
@@ -37,10 +37,12 @@ public class Variable {
 			"bind (strafter(str(?datasetUri), '#') as ?datasetTerm) "+
 			"} order by desc(?vnName) "; }
 
-	public static JsonObject list(String parameterTerm, String remoteService) {
+	public static JsonObject list(String parameterTerm, String keyword, 
+			Map<String, String[]> filters, String remoteService) {
 		JsonObject result= new JsonObject();
 		String query= query(parameterTerm);
-		ResultSet rs= Utils.query(query, remoteService);
+		String filteredQuery= App.filter(query, filters, "?varUri", keyword);
+		ResultSet rs= App.query(filteredQuery, remoteService);
 		result.put("variableNames", format(rs));
 		return result; }
 
@@ -54,15 +56,15 @@ public class Variable {
 		MultiMap<String, String> vnVariables= new MultiMapToSet<String, String>();
 		while (rs.hasNext()) {
 			QuerySolution qs= rs.nextSolution();
-			String vnTerm= Utils.str("vnTerm", qs);
-			String vnName= Utils.str("vnName", qs);
-			String varTerm= Utils.str("varTerm", qs);
-			String descrip= Utils.str("description", qs);
-			String projectTerm= Utils.str("projectTerm", qs);
-			String projectName= Utils.str("projectName", qs);
-			String datasetTerm= Utils.str("datasetTerm", qs);
-			String datasetName= Utils.str("datasetName", qs);
-			String uri= Utils.str("uri", qs);
+			String vnTerm= App.str("vnTerm", qs);
+			String vnName= App.str("vnName", qs);
+			String varTerm= App.str("varTerm", qs);
+			String descrip= App.str("description", qs);
+			String projectTerm= App.str("projectTerm", qs);
+			String projectName= App.str("projectName", qs);
+			String datasetTerm= App.str("datasetTerm", qs);
+			String datasetName= App.str("datasetName", qs);
+			String uri= App.str("uri", qs);
 			variableNames.add(vnTerm);
 			names.put(vnTerm, vnName);
 			names.put(projectTerm, projectName);
