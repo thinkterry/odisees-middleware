@@ -16,7 +16,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import odisees.utils.App;
 
 public class Variable {
-	protected static String query(String parameterTerm) { return App.prefix+
+	private static String query(String parameterTerm) { return App.prefix+
 			"select ?vnTerm ?vnName "+ 
 			"       ?varTerm ?description "+ 
 			"       ?projectTerm ?projectName "+ 
