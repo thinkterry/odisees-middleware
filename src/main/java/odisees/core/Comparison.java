@@ -37,8 +37,14 @@ public class Comparison {
 				"bind (strafter(str(?relUri), '#') as ?rel) } "; }
 
 	public static JsonObject list(String[] vars, String remoteService) {
-		ResultSet rs= App.query(query(vars), remoteService);
-		return format(rs); }
+		if (vars != null) { 
+			ResultSet rs= App.query(query(vars), remoteService);
+			return format(rs); }
+		else { 
+			JsonObject result= new JsonObject();
+			result.put("relations", new JsonArray());
+			result.put("variables", new JsonArray());
+			return result; }}
 
 	private static JsonObject format(ResultSet rs) {
 		Set<String> variables= new HashSet<String>();
