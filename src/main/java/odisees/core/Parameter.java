@@ -16,7 +16,10 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class Parameter { 
-	private static String generalQuery= ""+
+	private static String prefix= 
+			"prefix : <http://eosweb.larc.nasa.gov/2014/asdc#> "+
+					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ";
+	private static String generalQuery= prefix+
 			"select distinct ?pcTerm ?pcName { "+ 
 			"?pcUri a :ODISEESCategory ; "+
 			"rdfs:label ?pcName . "+
@@ -25,7 +28,7 @@ public class Parameter {
 			"bind (strafter(str(?pcUri), '#') as ?pcTerm) "+
 			"} order by desc(?pcName)";
 
-	private static String detailedQuery(String parameterTerm) { return  ""+
+	private static String detailedQuery(String parameterTerm) { return  prefix+
 			"select ?pcTerm ?filterTerm ?valueTerm ?filterName ?valueName (count(?varUri) as ?num) { "+
 			"bind('"+parameterTerm+"' as ?pcTerm) . "+
 			"?filterUri :searchFilterFor :"+parameterTerm+" . "+
@@ -84,13 +87,13 @@ public class Parameter {
 			param.put("filters", new JsonObject());
 			results.add(param); }
 		return results; }
-	
+
 	private static JsonArray format(ResultSet general, ResultSet detailed) {
 		List<String> params= new ArrayList<String>();
 		Map<String, String> names= new HashMap<String, String>();
-		MultiMap<String, String> filters= new MultiMapToList<String, String>();
+		MultiMap<String, String> paramFilters= new MultiMapToList<String, String>();
 		MultiMap<String, String> filterValues= new MultiMapToList<String, String>();
-		Map<String, Integer> filterCounts= new HashMap<String, Integer>();
+		Map<String, Integer> valueCounts= new HashMap<String, Integer>();
 		while (general.hasNext()) { 
 			QuerySolution qs= general.nextSolution();
 			params.add(str("pcTerm", qs));
@@ -105,19 +108,34 @@ public class Parameter {
 			Integer num= qs.getLiteral("num").getInt();
 			names.put(filterTerm, filterName);
 			names.put(valueTerm, valueName);
-			filters.put(pcTerm, filterTerm); 
+			paramFilters.put(pcTerm, filterTerm); 
 			filterValues.put(filterTerm, valueTerm);
-			filterCounts.put(valueTerm, num);
+			valueCounts.put(valueTerm, num);
 		}
 		JsonArray results= new JsonArray();
 		for (String p : params) {
 			JsonObject param= new JsonObject();
 			param.put("parameter", p);
 			param.put("name", names.get(p));
-			//param.put("filters", new JsonObject());
+			JsonObject filtersObj= new JsonObject();
+			if (paramFilters.containsKey(p)) {
+				for (String filter : paramFilters.get(p)) {
+					JsonObject filterObj= new JsonObject();
+					filterObj.put("filter", filter);
+					filterObj.put("name", names.get(filter));
+					JsonArray valuesArr= new JsonArray();
+					for (String value : filterValues.get(filter)) {
+						JsonObject valueObj= new JsonObject();
+						valueObj.put("value", value);
+						valueObj.put("name", names.get(value));
+						valueObj.put("count", valueCounts.get(value));
+						valuesArr.add(valueObj); }
+					filterObj.put("values", valuesArr);
+					filtersObj.put(filter, filterObj); }}
+			param.put("filters", filtersObj);
 			results.add(param); }
 		return results; }
-	
+
 	private static String str(String variable, QuerySolution qs) { 
 		return qs.getLiteral(variable).getString(); }
 
