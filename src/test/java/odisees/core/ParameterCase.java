@@ -5,26 +5,19 @@ import static org.junit.Assert.*;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ParameterCase {
-	static String remote= "http://localhost:8080/openrdf-sesame/repositories/nasa";
-	
-	@BeforeClass
-	public static void setup() {
-	
-	}
 	
 	@Test
 	public void generalParameters() {
-		JsonObject result= Parameter.list(null, remote);
+		JsonObject result= Parameter.list(null, null);
 		JsonArray params= result.get("parameters").getAsArray();
 		assertEquals(9, params.size()); }		
 	
 	@Test
 	public void detailedParameters() {
-		JsonObject result= Parameter.list("Pressure", remote);
+		JsonObject result= Parameter.list("Pressure", null);
 		JsonArray params= result.get("parameters").getAsArray();
 		for (JsonValue val : params) {
 			JsonObject param= val.getAsObject();
