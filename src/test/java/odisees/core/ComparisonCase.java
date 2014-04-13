@@ -13,10 +13,12 @@ public class ComparisonCase {
 		String[] vars= new String[] {
 				"M3ZSYN-BottomPressure-Low1", 
 				"M3ZSYN-BottomPressure-Low2", 
-				"M3ZSYN-BottomPressure-LowerMid1"};
+				"M3ZSYN-BottomPressure-LowerMid1",
+				"SFCWN_Surface1",
+				"SFCWN_Surface2"};
 		JsonObject result= Comparison.list(vars, null);
-		assertEquals(15, result.get("relations").getAsArray().size());
+		assertEquals(16, result.get("relations").getAsArray().size());
 		JsonArray variables= result.get("variables").getAsArray();
-		assertEquals(3, variables.size());
+		assertEquals(5, variables.size());
 		JsonObject first= variables.get(0).getAsObject();
-		assertEquals(15, first.get("quickFacts").getAsArray().size()); }}
+		assertEquals(16, first.get("quickFacts").getAsArray().size()); }}

@@ -54,14 +54,14 @@ public class Comparison {
 		while (rs.hasNext()) {
 			QuerySolution qs= rs.nextSolution();
 			String var= App.str("variable", qs);
-			if (qs.contains("variableName")) { names.put(var, qs.getLiteral("variableName").getString()); }
 			String rel= App.str("rel", qs);
-			if (qs.contains("relName")) { names.put(rel, qs.getLiteral("relName").getString()); }
 			String val= qs.getResource("value").toString();
+			if (qs.contains("variableName")) { names.put(var, qs.getLiteral("variableName").getString()); }
+			if (qs.contains("relName")) { names.put(rel, qs.getLiteral("relName").getString()); }
 			if (qs.contains("valueName")) { names.put(val, qs.getLiteral("valueName").getString()); }
 			variables.add(var);
 			relationsUnsorted.add(rel);
-			values.put(var+"#"+rel, val); }
+			values.put(var+rel, val); }
 		List<String> relations= new ArrayList<String>();
 		relations.addAll(relationsUnsorted);
 		if (relations.contains("variableName")) { relations.remove("variableName"); }
@@ -79,18 +79,21 @@ public class Comparison {
 			JsonArray quickFacts= new JsonArray();
 			JsonObject nameObj= new JsonObject();
 			nameObj.put("relation", "Variable Name");
-			nameObj.put("value", names.get(var));
+			if (names.containsKey(var)) { nameObj.put("value", names.get(var)); }
+			else { nameObj.put("value", var); }
 			quickFacts.add(nameObj);
 			for (String rel : relations) {
 				JsonObject relObj= new JsonObject();
 				if (names.containsKey(rel)) { relObj.put("relation", names.get(rel)); }
 				else { relObj.put("relation", rel); }
-				String varrel= var+"#"+rel; 
+				String varrel= var+rel; 
 				String val= values.getOne(varrel);
-				if (names.containsKey(val)) { relObj.put("value", names.get(val)); }
-				else { relObj.put("value", val.split("#")[1]); }
+				if (val == null) { relObj.put("value", " "); } 
+				else if (names.containsKey(val)) { relObj.put("value", names.get(val)); }
+				else if (val.contains("#")) { relObj.put("value", val.split("#")[1]); }
+				else { relObj.put("value", val); }
 				quickFacts.add(relObj); }
 			varObj.put("quickFacts", quickFacts);
-			varArr.add(varObj); }
+			varArr.add(varObj);  }
 		result.put("variables", varArr);
 		return result; }}

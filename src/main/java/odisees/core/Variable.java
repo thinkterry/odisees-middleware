@@ -64,13 +64,12 @@ public class Variable {
 			String projectName= App.str("projectName", qs);
 			String datasetTerm= App.str("datasetTerm", qs);
 			String datasetName= App.str("datasetName", qs);
-			String uri= App.str("uri", qs);
+			if (qs.contains("uri")) { varUris.put(varTerm, qs.getLiteral("uri").getString()); }
 			variableNames.add(vnTerm);
 			names.put(vnTerm, vnName);
 			names.put(projectTerm, projectName);
 			names.put(varTerm, datasetName);
 			varDatasets.put(varTerm, datasetTerm);
-			varUris.put(varTerm, uri);
 			descriptions.put(vnTerm, descrip);
 			vnProjects.put(vnTerm, projectTerm);
 			vnVariables.put(vnTerm, varTerm); }
