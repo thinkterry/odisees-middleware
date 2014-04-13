@@ -1,7 +1,10 @@
 package odisees.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,12 +65,14 @@ public class Parameter {
 		return result; }
 
 	private static JsonArray format(ResultSet rs) {
-		Set<String> params= new HashSet<String>();
+		Set<String> unsortedParams= new HashSet<String>();
 		Map<String, String> names= new HashMap<String, String>();
 		while (rs.hasNext()) { 
 			QuerySolution qs= rs.nextSolution();
-			params.add(App.str("pcTerm", qs));
+			unsortedParams.add(App.str("pcTerm", qs));
 			names.put(App.str("pcTerm", qs), App.str("pcName", qs)); }
+		List<String> params= new ArrayList<String>(unsortedParams);
+		Collections.sort(params);
 		JsonArray results= new JsonArray();
 		for (String p : params) {
 			JsonObject param= new JsonObject();
@@ -78,14 +83,14 @@ public class Parameter {
 		return results; }
 
 	private static JsonArray format(ResultSet general, ResultSet detailed) {
-		Set<String> params= new HashSet<String>();
+		Set<String> unsortedParams= new HashSet<String>();
 		Map<String, String> names= new HashMap<String, String>();
 		MultiMap<String, String> paramFilters= new MultiMapToSet<String, String>();
 		MultiMap<String, String> filterValues= new MultiMapToSet<String, String>();
 		Map<String, Integer> valueCounts= new HashMap<String, Integer>();
 		while (general.hasNext()) { 
 			QuerySolution qs= general.nextSolution();
-			params.add(App.str("pcTerm", qs));
+			unsortedParams.add(App.str("pcTerm", qs));
 			names.put(App.str("pcTerm", qs), App.str("pcName", qs)); }
 		while (detailed.hasNext()) {
 			QuerySolution qs= detailed.nextSolution();
@@ -101,6 +106,8 @@ public class Parameter {
 			filterValues.put(filterTerm, valueTerm);
 			valueCounts.put(valueTerm, num);
 		}
+		List<String> params= new ArrayList<String>(unsortedParams);
+		Collections.sort(params);
 		JsonArray results= new JsonArray();
 		for (String p : params) {
 			JsonObject param= new JsonObject();

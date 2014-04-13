@@ -36,7 +36,7 @@ public class Resource {
 	private static JsonObject format(String item, ResultSet rs) {
 		Map<String, String> names= new HashMap<String, String>();
 		Map<String, String> uris= new HashMap<String, String>();
-		Map<String, String> isResource= new HashMap<String, String>();
+		Map<String, Boolean> isResource= new HashMap<String, Boolean>();
 		MultiMap<String, String> relations= new MultiMapToSet<String, String>();
 		MultiMap<String, String> values= new MultiMapToSet<String, String>();		
 		while (rs.hasNext()) {
@@ -47,7 +47,7 @@ public class Resource {
 			if (qs.contains("relName")) { names.put(rel, qs.getLiteral("relName").getString()); }
 			if (qs.contains("valueName")) { names.put(value, qs.getLiteral("valueName").getString()); }
 			if (qs.contains("uri")) { uris.put(value, qs.get("uri").toString()); }
-			String isResrc= App.str("isResource", qs);
+			Boolean isResrc= qs.getLiteral("isResource").getBoolean();
 			relations.put(item, rel);
 			values.put(rel, value);
 			isResource.put(value, isResrc); }
@@ -68,7 +68,7 @@ public class Resource {
 	
 	private static JsonObject getRelInfo(String item, String rel, 
 			MultiMap<String, String> values, Map<String, String> names,
-			Map<String, String> uris, Map<String, String> isResource) {
+			Map<String, String> uris, Map<String, Boolean> isResource) {
 		JsonObject result= new JsonObject();
 		if (names.containsKey(rel)) { result.put("relation", names.get(rel)); }
 		else { result.put("relation", rel); }

@@ -54,16 +54,13 @@ public class Comparison {
 		while (rs.hasNext()) {
 			QuerySolution qs= rs.nextSolution();
 			String var= App.str("variable", qs);
-			String varName= App.str("variableName", qs);
+			if (qs.contains("variableName")) { names.put(var, qs.getLiteral("variableName").getString()); }
 			String rel= App.str("rel", qs);
-			String relName= App.str("relName", qs);
+			if (qs.contains("relName")) { names.put(rel, qs.getLiteral("relName").getString()); }
 			String val= qs.getResource("value").toString();
-			String valName= App.str("valueName", qs);
+			if (qs.contains("valueName")) { names.put(val, qs.getLiteral("valueName").getString()); }
 			variables.add(var);
 			relationsUnsorted.add(rel);
-			names.put(var, varName);
-			names.put(rel, relName);
-			names.put(val, valName);
 			values.put(var+"#"+rel, val); }
 		List<String> relations= new ArrayList<String>();
 		relations.addAll(relationsUnsorted);
