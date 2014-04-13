@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 
 import odisees.core.ComparisonCase;
 import odisees.core.ParameterCase;
+import odisees.core.ResourceCase;
 import odisees.core.VariableCase;
 import odisees.utils.App;
 
@@ -17,7 +18,9 @@ import org.junit.runners.Suite;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ParameterCase.class, VariableCase.class, ComparisonCase.class})
+@SuiteClasses({ 
+	ParameterCase.class, VariableCase.class, 
+	ComparisonCase.class, ResourceCase.class})
 public class TestSuite {
 	
 	@BeforeClass
