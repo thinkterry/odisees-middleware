@@ -55,10 +55,10 @@ public class Comparison {
 			QuerySolution qs= rs.nextSolution();
 			String var= App.str("variable", qs);
 			String rel= App.str("rel", qs);
-			String val= qs.getResource("value").toString();
-			if (qs.contains("variableName")) { names.put(var, qs.getLiteral("variableName").getString()); }
-			if (qs.contains("relName")) { names.put(rel, qs.getLiteral("relName").getString()); }
-			if (qs.contains("valueName")) { names.put(val, qs.getLiteral("valueName").getString()); }
+			String val= App.str("value", qs);
+			if (qs.contains("variableName")) { names.put(var, App.str("variableName", qs)); }
+			if (qs.contains("relName")) { names.put(rel, App.str("relName", qs)); }
+			if (qs.contains("valueName")) { names.put(val, App.str("valueName", qs)); }
 			variables.add(var);
 			relationsUnsorted.add(rel);
 			values.put(var+rel, val); }

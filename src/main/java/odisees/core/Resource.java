@@ -42,11 +42,11 @@ public class Resource {
 		while (rs.hasNext()) {
 			QuerySolution qs= rs.nextSolution();
 			String rel= App.str("rel", qs);
-			String value= qs.get("value").toString();
-			if (qs.contains("itemName")) { names.put(item, qs.getLiteral("itemName").getString()); }
-			if (qs.contains("relName")) { names.put(rel, qs.getLiteral("relName").getString()); }
-			if (qs.contains("valueName")) { names.put(value, qs.getLiteral("valueName").getString()); }
-			if (qs.contains("uri")) { uris.put(value, qs.get("uri").toString()); }
+			String value= App.str("value", qs);
+			if (qs.contains("itemName")) { names.put(item, App.str("itemName", qs)); }
+			if (qs.contains("relName")) { names.put(rel, App.str("relName", qs)); }
+			if (qs.contains("valueName")) { names.put(value, App.str("valueName", qs)); }
+			if (qs.contains("uri")) { uris.put(value, App.str("uri", qs)); }
 			Boolean isResrc= qs.getLiteral("isResource").getBoolean();
 			relations.put(item, rel);
 			values.put(rel, value);

@@ -9,6 +9,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class App {
 	public static Model localService;
@@ -18,8 +19,10 @@ public class App {
 					"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+
 					"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ";
 
-	public static String str(String variable, QuerySolution qs) { 
-		return qs.getLiteral(variable).getString(); }
+	public static String str(String variable, QuerySolution qs) {
+		RDFNode valNode= qs.get(variable);
+		if (valNode.isLiteral()) { return valNode.asLiteral().getString(); }
+		else { return valNode.asResource().getURI(); }}
 
 	public static ResultSet query(String query, String remoteService) {
 		if (remoteService == null) {
