@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ASDC ODISEES Data Portal</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/reset.css" type="text/css" />
+    <link rel="stylesheet" href="css/main.css" type="text/css" />
+    <link href="css/custom-theme/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <script src="js/jquery-1.8.3.js"></script> 
+    <script src="js/jquery-ui-1.9.2.custom.js"></script> 
+    <script src="js/handlebars.js"></script>
+    <script src="js/main.js"></script> 
+  </head>
+
+  <body id="index" class="home">
+    <div id="container"> 
+      <!-- Header Area -->
+      <div id="header">
+	<div class="logo"><img src="images/header.png" width="576" height="129" alt=""/></div>
+	<div class="search">
+	  <form>
+            <input id="search-box" type="search" name="search">
+      	    <button id="keyword-search" type="button" name="" value="" class="sbtn">Search</button>
+	  </form>
+	</div>
+      </div>
+      <!-- End Header Area --> 
+      <!-- Instructions Div -->
+      <div class="instructionshow"><a href="#" class="show_hide">Site Usage Directions</a></div>
+      <div class="instruction">Welcome to the NASA ODISEES Date Portal. To use this site, check the appropriate boxes on the left to load those results. In the right pane, you can view individual results or you can check multiple items and click the compare button under the left menu. When you click on a link in the right pane, a popup box will open with additional details. When you compare two (2) or more values, a popup box will also open.<br>
+	<br>
+	If you experience any problems with the site, please contact us <a href="#">here</a>.
+	<div class="closedir"><a href="#" class="show_hide">Close</a></div>
+      </div>
+      <!-- End Instructions Div --> 
+      <!-- Content Area -->
+      <div id="content_box"> 
+	<!-- Begin Left Nav DIV -->
+	<div id="left-nav">	
+	</div>
+	<div id="right-content"></div>
+      </div>
+      <a href="#" class="back-to-top">Back to Top</a> 
+      <!-- End Right Content DIV --> 
+    </div>
+    <!-- End Content Area -->
+    <div id="footer">Copyright &copy; 2013. NASA Research Center. <a href="#">Disclaimer and Terms of Use</a></div>
+</div>
+
+<script id="params-template" type="text/x-handlebars-template">
+  <div style="width: 285px;" id="accordion">
+    {{#each parameters}} 
+    <h3 id="param-{{parameter}}" uuid="{{parameter}}">{{name}}</h3> 
+    <div> 
+      <p>
+	{{#each filters}} 
+	<div class='filterValues'>
+	  <strong id='{{filter}}'>{{name}}</strong><br> 
+	  <br> 
+	  {{#each values}} 
+	  <div>
+	    <input type='checkbox' name='{{value}}' value='{{../filter}}---{{value}}'
+		   id='{{../filter}}---{{value}}'> 
+	    <label filt='{{../filter}}---{{value}}' for='{{value}}'>
+	      {{name}}({{count}})
+	    </label>
+	    <br>
+	  </div>
+	  {{/each}} 
+	  <br>
+	</div>
+	{{/each}} 
+      </p> 
+    </div> 
+    {{/each}}
+  </div>
+  <button id="compare" type="button" name="" value="" class="comparebtn">Compare</button>
+</script>
+
+<script id="vars-template" type="text/x-handlebars-template">
+  <table id='content-table'>
+    <thead>
+      <tr>
+	<th scope="col" class="bg">Variable</th>
+	<th scope="col" class="bg">Description</th>
+	<th scope="col" class="bg">Project</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each variableNames}}
+      <tr class='variableName' var='{{variableName}}' id='varpicker-{{variableName}}'>
+	<td>{{label}} ({{variables.length}})</td>
+	<td>{{description}}</td>
+	<td>{{#each projects}}{{name}} {{/each}}</td>
+      </tr>
+      <tr><td><table><tbody>
+	      {{#each variables}}
+	      <tr class='variable'>
+		<td> 
+		  <input type='checkbox' value='{{variable}}'/>
+		  <a uuid='{{variable}}' class='infolink' href='#'>{{name}}</a> 
+		  {{#if uri}}
+		  <input type="button" 
+			 onclick="window.open('{{uri}}',
+				  '_blank', 'resizable=yes')" 
+			 value="order data"/>
+		  {{/if}}
+		</td>
+	      </tr>
+	      {{/each}}
+      </tbody></table></td></tr>
+      {{/each}} 
+    </tbody>
+  </table>
+</script>
+
+<script id="compare-template" type="text/x-handlebars-template">
+  <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>ODISEES Variable Comparison</title>
+      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+      <link rel="icon" href="favicon.ico" type="image/x-icon">
+      <link rel="stylesheet" href="css/datatables.css"type="text/css" />
+      <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' type='text/css'>
+    </head>
+    <body id="dtable">
+      <div id="container">
+	<h1>Variable Comparison</h1>
+	<table cellpadding="0" cellspacing="0" border="0" class="display" id="comparetable">
+	  <thead>
+	    {{#each relations}}
+	    <th>{{this}}</th>
+	    {{/each}}
+	  </thead>
+	  <tbody>
+	    {{#each variables}}
+	    <tr>
+	      {{#each quickFacts}}
+	      <td>{{value}}</td>
+	      {{/each}}
+	    </tr>
+	    {{/each}}
+	  </tbody>
+	</table>
+      </div>
+      <script src="js/jquery-1.8.3.js"></script> 
+      <script src="js/jquery.dataTables.min.js"></script> 
+      <script type="text/javascript">
+	$(document).ready(function(){
+	$('#comparetable').dataTable();
+	});
+      </script>
+    </body>
+  </html>
+</script>
+
+
+<script id="info-template" type="text/x-handlebars-template">
+  <html>
+    <head><title>{{name}} Info</title></head>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/popuptable.css" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+    <body>    
+      <div class="popuptable">
+	<h3 id='name'>{{name}}</h3>
+	<table class="bordered">
+	  <thead>
+	    <tr>
+              <th colspan="2">Quick Facts</th>
+	    </tr>
+	  </thead>
+	  {{#each facts}}
+	  <tr>
+	    <td width="25%">{{relation}}</td>
+	    <td width="75%">
+	      {{#each values}}
+	      {{#if isResource}}
+	      <a uuid='{{uuid}}' class='infolink' href='#'>{{name}}</a><br>
+	      {{else}}{{name}}<br>
+	      {{/if}}
+	      {{/each}}
+	    </td>
+	  </tr>
+	  {{/each}}
+	</table>
+	<div style="height: 20px;"></div>
+	<table class="bordered">
+	  <thead>
+	    <tr>
+              <th>Datasets</th>
+	    </tr>
+	  </thead>
+	  {{#each datasets}}
+	  <tr>
+	    <td>
+	      {{#each values}}
+	      {{#if isResource}}
+	      <a uuid="{{uuid}}" class="infolink" href="#">{{name}}</a>
+	      {{else}}{{name}}
+	      {{/if}}
+	      {{#if uri}}
+	      <input type="button" 
+		     onclick="window.open('{{uri}}',
+			      '_blank', 'resizable=yes')" 
+		     value="order data"/>
+	      {{else}}
+	      <input type="button" 
+		     onclick="window.open('https://eosweb.larc.nasa.gov/search/node/{{name}}',
+			      '_blank', 'resizable=yes')" 
+		     value="order data"/>
+	      {{/if}}
+	      {{/each}}
+	    </td>
+	  </tr>
+	  {{/each}}
+	</table>
+	<button type="button" onclick="window.print()" class="bluebtn">Print</button>
+      </div>
+</script>
+
+</body>
+</html>
