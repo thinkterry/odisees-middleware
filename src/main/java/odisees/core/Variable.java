@@ -26,7 +26,7 @@ public class Variable {
 			"        :project ?projectUri; "+ 
 			"        :dataSet ?datasetUri . "+
 			"?vnUri rdfs:label ?vnName ; "+
-			"       rdfs:label ?description . "+ 
+			"       :description ?description . "+ 
 			"?projectUri rdfs:label ?projectName . "+
 			"?datasetUri rdfs:label ?datasetName ; "+
 			"            :productionStatus :ASDCCurrentDataProduct . "+
