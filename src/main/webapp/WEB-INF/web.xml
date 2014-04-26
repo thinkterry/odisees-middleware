@@ -9,6 +9,14 @@
     	<param-value>http://localhost:8080/openrdf-sesame/repositories/nasa</param-value>
     </init-param>
     <init-param>
+    	<param-name>username</param-name>
+    	<param-value></param-value>
+    </init-param>
+    <init-param>
+    	<param-name>password</param-name>
+    	<param-value></param-value>
+    </init-param>
+    <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>odisees.service</param-value>
     </init-param>

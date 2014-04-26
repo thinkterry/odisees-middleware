@@ -1,9 +1,14 @@
 package odisees.utils;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.jena.atlas.web.auth.PreemptiveBasicAuthenticator;
+import org.apache.jena.atlas.web.auth.ScopedAuthenticator;
 
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -13,6 +18,12 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class App {
 	public static Model localService;
+	private static PreemptiveBasicAuthenticator auth;
+	
+	public static void setAuth(String target, String username, String passwd) throws URISyntaxException {
+		URI uri= new URI(target);
+		ScopedAuthenticator sa= new ScopedAuthenticator(uri, username, passwd.toCharArray());
+		auth= new PreemptiveBasicAuthenticator(sa); }
 
 	public static String prefix= 
 			"prefix : <http://eosweb.larc.nasa.gov/2014/asdc#> " +
@@ -28,7 +39,7 @@ public class App {
 		if (remoteService == null) {
 			return QueryExecutionFactory.create(query, localService).execSelect(); }
 		else {
-			return QueryExecutionFactory.sparqlService(remoteService, query).execSelect(); }}
+			return QueryExecutionFactory.sparqlService(remoteService, query, auth).execSelect(); }}
 
 	public static String filter(String query, Map<String, String[]> filters, String filterVar, String keyword) {
 		String beginning= query.substring(0, query.lastIndexOf('}'));

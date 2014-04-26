@@ -15,7 +15,7 @@ import odisees.utils.App;
 
 public class Resource {
 	private static String query(String item) { return App.prefix+
-		"select ?item ?rel ?value ?itemName ?relName ?valueName ?isResource ?uri { "+
+		"select distinct ?item ?rel ?value ?itemName ?relName ?valueName ?isResource ?uri { "+
 			"bind (:"+item+" as ?itemUri) . "+
 			"?itemUri ?relUri ?value . "+
 			"?relUri rdf:type :QuickFact . "+
@@ -23,11 +23,10 @@ public class Resource {
 			"OPTIONAL { ?relUri rdfs:label ?relName } "+ 
 			"OPTIONAL { ?value rdfs:label ?valueName } "+
 			"OPTIONAL { ?value :url ?uri } "+
+			"OPTIONAL { ?value ?valRel _:x . ?valRel a :QuickFact } "+
 			"bind (strafter(str(?itemUri), '#') as ?item) "+
 			"bind (strafter(str(?relUri), '#') as ?rel) "+
-			"bind (exists { "+
-			 "?value ?valRel ?valVal . ?valRel a :QuickFact "+
-			"} as ?isResource) }"; }
+			"bind (bound(?valRel) as ?isResource) }"; }
 	
 	public static JsonObject view(String item, String remoteService) {
 		ResultSet rs= App.query(query(item), remoteService);
