@@ -23,10 +23,11 @@ public class Resource {
 			"OPTIONAL { ?relUri rdfs:label ?relName } "+ 
 			"OPTIONAL { ?value rdfs:label ?valueName } "+
 			"OPTIONAL { ?value :url ?uri } "+
-			"OPTIONAL { ?value ?valRel _:x . ?valRel a :QuickFact } "+
 			"bind (strafter(str(?itemUri), '#') as ?item) "+
 			"bind (strafter(str(?relUri), '#') as ?rel) "+
-			"bind (bound(?valRel) as ?isResource) }"; }
+			"bind (exists { " +
+			" ?value ?valRel ?valVal . ?valRel a :QuickFact } " +
+			"as ?isResource) }"; }
 	
 	public static JsonObject view(String item, String remoteService) {
 		ResultSet rs= App.query(query(item), remoteService);
