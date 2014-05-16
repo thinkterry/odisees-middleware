@@ -6,6 +6,10 @@ var infoUrl= "data/info";
 var accordionOptions= {collapsible: true,
 		       active: false,
 		       heightStyle: "content"}
+var preferredFilters= [
+        'Data Source', 'Parameter',
+        'Project', 'Spatial Resolution',
+        'Temporal Resolution', 'Location'];
 
 var getParametersContent;
 var getVariablesContent;
@@ -62,7 +66,62 @@ function setTemplates() {
 function getParameters(params) { 
     $.getJSON(parametersUrl, params, setParameters); 
 }
+function liftPreferred(array, key, preferredValues) {
+    // Given an array of objects, move to the front the objects whose
+    // value accessed by the given key is among the preferred values,
+    // in the same order as the preferred values.
+
+    var preferred= [];
+    var others= $.extend(true, [], array); // Deep copy per http://stackoverflow.com/a/122704.
+    for (var i= 0; i < preferredValues.length; i++) {
+        for (var j= 0; j < others.length; j++) {
+            if (preferredValues[i] == others[j][key]) {
+                preferred.push(others[j]);
+                others.splice(j, 1); // Pop from middle per http://stackoverflow.com/a/5767357.
+                break;
+            }
+        }
+    }
+    return preferred.concat(others);
+}
+function objectToSortedArray(object, key, preferredValues, reverse) {
+    // Convert unsortable object to sortable array per http://stackoverflow.com/a/1069840.
+    var sortable= [];
+    for (var k in object) {
+        if (object.hasOwnProperty(k)) {
+            sortable.push(object[k]);
+        }
+    }
+
+    // Sort by property per http://stackoverflow.com/q/5073799.
+    reverse= reverse ? -1 : 1;
+    sortable.sort(function (a, b) {
+        // Case-insensitive sort per http://stackoverflow.com/a/8996984.
+        var lowerA= a[key].toLowerCase();
+        var lowerB= b[key].toLowerCase();
+        if (lowerA < lowerB) {
+            return -1 * reverse;
+        } else if (lowerA < lowerB) {
+            return 1 * reverse;
+        } else {
+            return 0;
+        }
+    });
+
+    return sortable;
+}
 function setParameters(data) {    
+    // Sort filters before displaying.
+    // Ideally the back-end would provide us a sorted array to begin with.
+    for (var i= 0; i < data.parameters.length; i++) {
+        var params= data.parameters[i];
+        // Check for empty object per http://stackoverflow.com/a/2866221.
+        if (!$.isEmptyObject(params.filters)) {
+            var sorted= objectToSortedArray(params.filters, 'name', preferredFilters, false);
+            params.filters= liftPreferred(sorted, 'name', preferredFilters);
+        }
+    }
+
     $('#left-nav').html(getParametersContent(data));
     $('#accordion').unbind();
     $('#accordion h3').unbind();
