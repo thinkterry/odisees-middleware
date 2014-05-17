@@ -101,7 +101,7 @@
 	      <tr class='variable'>
 		<td> 
 		  <input type='checkbox' value='{{variable}}'/>
-		  <a uuid='{{variable}}' class='infolink' href='#'>{{name}}</a> 
+		  <a uuid='{{variable}}' class='infolink' target='_blank' href='?variable={{variable}}'>{{name}}</a> 
 		  {{#if uri}}
 		  <input type="button" 
 			 onclick="window.open('{{uri}}',
@@ -181,7 +181,8 @@
 	    <td width="75%">
 	      {{#each values}}
 	      {{#if isResource}}
-	      <a uuid='{{uuid}}' class='infolink' href='#'>{{name}}</a><br>
+	      <!-- Valid URL per http://stackoverflow.com/a/7872230. -->
+	      <a uuid='{{uuid}}' class='infolink' target='_blank' href='?uuid={{uuid}}'>{{name}}</a><br>
 	      {{else}}{{name}}<br>
 	      {{/if}}
 	      {{/each}}
@@ -201,7 +202,8 @@
 	    <td>
 	      {{#each values}}
 	      {{#if isResource}}
-	      <a uuid="{{uuid}}" class="infolink" href="#">{{name}}</a>
+	      <!-- Valid URL per http://stackoverflow.com/a/7872230. -->
+	      <a uuid="{{uuid}}" class="infolink" target="_blank" href="?uuid={{uuid}}">{{name}}</a>
 	      {{else}}{{name}}
 	      {{/if}}
 	      {{#if uri}}

@@ -1,6 +1,7 @@
 var parametersUrl= "data/parameters";
 var variablesUrl= "data/variables";
 var comparisonUrl= "data/comparison";
+var comparisonGetKey = "vars";
 var infoUrl= "data/info";
 
 var accordionOptions= {collapsible: true,
@@ -45,6 +46,9 @@ function setup() {
 	$(".instruction").fadeToggle();
     });
     setTemplates();
+    renderInfoIfRequested("variable"); // Must match "infolink" class in index.html.
+    renderInfoIfRequested("uuid"); // Must match "infolink" class in index.html.
+    renderComparisonIfRequested(comparisonGetKey);
 }
 function interceptEnterKey(e) {
    if ( e.keyCode == 13 ) {
@@ -150,7 +154,7 @@ function setParameters(data) {
 	    currentParameter= null;
 	}
     });
-    $("#compare").click(getComparison);
+    $("#compare").click(openComparisonWindow);
 }
 function getCurrentParamIndex(data) {
     var params= $.map(data["parameters"], function(x) { return x["parameter"]; });
@@ -175,7 +179,6 @@ function setVariableNames(data) {
     $('#compare').show();
     $('#right-content').html(getVariablesContent(data));
     activateVarTableAccordion();
-    $('a.infolink').unbind().click(infoLinkClick);
     $('#search-form').show();
     $('#search-box').val('');
     $('#keyword-search').unbind().click(keywordSearch);
@@ -203,41 +206,63 @@ function filterMap() {
     }
     return X;
 }
-function getComparison() {
+function openComparisonWindow() {
     var selectedVars= $(".variable input[type='checkbox']:checked")
 	.map(function () { return this.value; }).get();
     if (selectedVars.length > 0) {
-	$.getJSON(comparisonUrl, {"vars": selectedVars}, setComparison); 
+       // Valid URL per http://stackoverflow.com/a/7872230.
+       window.open("?" + comparisonGetKey + "=" + selectedVars.join(","))
     }
 }
-function setComparison(data) {
-    var w= window.open('', '', 'height=500, width='+screen.width);
-    w.document.open();
-    w.document.write(getComparisonContent(data));
-    w.document.close();
-    return false;
+function getComparison(selectedVars) {
+    $.getJSON(comparisonUrl, {"vars": selectedVars}, setComparison);
 }
-function infoLinkClick(e) {
-    e.preventDefault();
-    getInfo($(this).attr('uuid'));
+function setComparison(data) {
+    // Replace content of entire page per http://stackoverflow.com/a/4292640.
+    document.write(getComparisonContent(data));
+    document.close();
+    return false;
 }
 function getInfo(item) {
     $.getJSON(infoUrl+"/"+item, setInfo);
 }
 function setInfo(data) {
-    var w =  window.open('','','width=450,height=400');
     var head= getInfoContent(data);
     var scripts= "<script src='js/jquery-1.8.3.js'></script>"+
 	"<script src='js/jquery-ui-1.9.2.custom.js'></script>"+ 
 	"<script src='js/handlebars.js'></script>"+
-	"<script src='js/popup.js'></script> "+
 	"<script id='info-template' type='text/x-handlebars-template'>"+
 	$('#info-template').html()+"</script>";
     var tail= "</body></html>";
     var content= head+scripts+tail;
-    w.document.open();    
-    w.document.write(content);
-    w.document.close();
+    // Replace content of entire page per http://stackoverflow.com/a/4292640.
+    document.write(content);
+    document.close();
+    return false;
+}
+function renderInfoIfRequested(key) {
+    var val = getQueryVariable(key);
+    if (val) {
+        getInfo(val);
+    }
+}
+function renderComparisonIfRequested(key) {
+    var val = getQueryVariable(key);
+    if (val) {
+        var selectedVars = val.split(",");
+        getComparison(selectedVars);
+    }
+}
+// Per http://stackoverflow.com/q/901115/#comment17845348_901115.
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] === variable) {
+            return pair[1];
+        }
+    }
     return false;
 }
 
