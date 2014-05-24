@@ -1,7 +1,7 @@
 var parametersUrl= "data/parameters";
 var variablesUrl= "data/variables";
 var comparisonUrl= "data/comparison";
-var comparisonGetKey = "vars";
+var comparisonGetKey= "vars";
 var infoUrl= "data/info";
 
 var accordionOptions= {collapsible: true,
@@ -24,8 +24,8 @@ var currentKeyword= "";
 $(document).ready(setup);
 
 function setup() {
-    var offset = 220;
-    var duration = 500;
+    var offset= 220;
+    var duration= 500;
     jQuery(window).scroll(function() {
 	if (jQuery(this).scrollTop() > offset) {
 	    jQuery('.back-to-top').fadeIn(duration);
@@ -44,6 +44,7 @@ function setup() {
     renderInfoIfRequested("variable"); // Must match "infolink" class in index.html.
     renderInfoIfRequested("uuid"); // Must match "infolink" class in index.html.
     renderComparisonIfRequested(comparisonGetKey);
+    $('#category-instructions').show();
 }
 function interceptEnterKey(e) {
    if ( e.keyCode == 13 ) {
@@ -64,50 +65,6 @@ function setTemplates() {
 }
 function getParameters(params) { 
     $.getJSON(parametersUrl, params, setParameters); 
-}
-function liftPreferred(array, key, preferredValues) {
-    // Given an array of objects, move to the front the objects whose
-    // value accessed by the given key is among the preferred values,
-    // in the same order as the preferred values.
-
-    var preferred= [];
-    var others= $.extend(true, [], array); // Deep copy per http://stackoverflow.com/a/122704.
-    for (var i= 0; i < preferredValues.length; i++) {
-        for (var j= 0; j < others.length; j++) {
-            if (preferredValues[i] == others[j][key]) {
-                preferred.push(others[j]);
-                others.splice(j, 1); // Pop from middle per http://stackoverflow.com/a/5767357.
-                break;
-            }
-        }
-    }
-    return preferred.concat(others);
-}
-function objectToSortedArray(object, key, preferredValues, reverse) {
-    // Convert unsortable object to sortable array per http://stackoverflow.com/a/1069840.
-    var sortable= [];
-    for (var k in object) {
-        if (object.hasOwnProperty(k)) {
-            sortable.push(object[k]);
-        }
-    }
-
-    // Sort by property per http://stackoverflow.com/q/5073799.
-    reverse= reverse ? -1 : 1;
-    sortable.sort(function (a, b) {
-        // Case-insensitive sort per http://stackoverflow.com/a/8996984.
-        var lowerA= a[key].toLowerCase();
-        var lowerB= b[key].toLowerCase();
-        if (lowerA < lowerB) {
-            return -1 * reverse;
-        } else if (lowerA < lowerB) {
-            return 1 * reverse;
-        } else {
-            return 0;
-        }
-    });
-
-    return sortable;
 }
 function setParameters(data) {    
     // Sort filters before displaying.
@@ -152,6 +109,50 @@ function setParameters(data) {
 	}
     });
     $("#compare").click(openComparisonWindow);
+}
+function liftPreferred(array, key, preferredValues) {
+    // Given an array of objects, move to the front the objects whose
+    // value accessed by the given key is among the preferred values,
+    // in the same order as the preferred values.
+
+    var preferred= [];
+    var others= $.extend(true, [], array); // Deep copy per http://stackoverflow.com/a/122704.
+    for (var i= 0; i < preferredValues.length; i++) {
+        for (var j= 0; j < others.length; j++) {
+            if (preferredValues[i] == others[j][key]) {
+                preferred.push(others[j]);
+                others.splice(j, 1); // Pop from middle per http://stackoverflow.com/a/5767357.
+                break;
+            }
+        }
+    }
+    return preferred.concat(others);
+}
+function objectToSortedArray(object, key, preferredValues, reverse) {
+    // Convert unsortable object to sortable array per http://stackoverflow.com/a/1069840.
+    var sortable= [];
+    for (var k in object) {
+        if (object.hasOwnProperty(k)) {
+            sortable.push(object[k]);
+        }
+    }
+
+    // Sort by property per http://stackoverflow.com/q/5073799.
+    reverse= reverse ? -1 : 1;
+    sortable.sort(function (a, b) {
+        // Case-insensitive sort per http://stackoverflow.com/a/8996984.
+        var lowerA= a[key].toLowerCase();
+        var lowerB= b[key].toLowerCase();
+        if (lowerA < lowerB) {
+            return -1 * reverse;
+        } else if (lowerA < lowerB) {
+            return 1 * reverse;
+        } else {
+            return 0;
+        }
+    });
+
+    return sortable;
 }
 function getCurrentParamIndex(data) {
     var params= $.map(data["parameters"], function(x) { return x["parameter"]; });
@@ -253,24 +254,24 @@ function setInfo(data) {
     return false;
 }
 function renderInfoIfRequested(key) {
-    var val = getQueryVariable(key);
+    var val= getQueryVariable(key);
     if (val) {
         getInfo(val);
     }
 }
 function renderComparisonIfRequested(key) {
-    var val = getQueryVariable(key);
+    var val= getQueryVariable(key);
     if (val) {
-        var selectedVars = val.split(",");
+        var selectedVars= val.split(",");
         getComparison(selectedVars);
     }
 }
 // Per http://stackoverflow.com/q/901115/#comment17845348_901115.
 function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
+    var query= window.location.search.substring(1);
+    var vars= query.split("&");
+    for (var i= 0; i < vars.length; i++) {
+        var pair= vars[i].split("=");
         if (pair[0] === variable) {
             return pair[1];
         }

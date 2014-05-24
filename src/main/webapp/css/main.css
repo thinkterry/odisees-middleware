@@ -86,6 +86,7 @@ input[type="search"] {
 	margin: 12px 10px 10px 0;
 }
 #category-instructions {
+	display: none; /* Avoid content flash for popup windows. */
 	line-height: 1.5;
 }
 #category-instructions p {
