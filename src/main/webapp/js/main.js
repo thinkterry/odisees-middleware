@@ -1,7 +1,7 @@
 var parametersUrl= "data/parameters";
 var variablesUrl= "data/variables";
 var comparisonUrl= "data/comparison";
-var comparisonGetKey = "vars";
+var comparisonGetKey= "vars";
 var infoUrl= "data/info";
 
 var accordionOptions= {collapsible: true,
@@ -24,8 +24,8 @@ var currentKeyword= "";
 $(document).ready(setup);
 
 function setup() {
-    var offset = 220;
-    var duration = 500;
+    var offset= 220;
+    var duration= 500;
     jQuery(window).scroll(function() {
 	if (jQuery(this).scrollTop() > offset) {
 	    jQuery('.back-to-top').fadeIn(duration);
@@ -40,15 +40,11 @@ function setup() {
 	jQuery('html, body').animate({scrollTop: 0}, duration);
 	return false;
     });
-    $(".instruction").hide();
-    $(".show_hide").show();    
-    $('.show_hide').click(function(){
-	$(".instruction").fadeToggle();
-    });
     setTemplates();
     renderInfoIfRequested("variable"); // Must match "infolink" class in index.html.
     renderInfoIfRequested("uuid"); // Must match "infolink" class in index.html.
     renderComparisonIfRequested(comparisonGetKey);
+    $('#category-instructions').show();
 }
 function interceptEnterKey(e) {
    if ( e.keyCode == 13 ) {
@@ -69,6 +65,50 @@ function setTemplates() {
 }
 function getParameters(params) { 
     $.getJSON(parametersUrl, params, setParameters); 
+}
+function setParameters(data) {    
+    // Sort filters before displaying.
+    // Ideally the back-end would provide us a sorted array to begin with.
+    for (var i= 0; i < data.parameters.length; i++) {
+        var params= data.parameters[i];
+        // Check for empty object per http://stackoverflow.com/a/2866221.
+        if (!$.isEmptyObject(params.filters)) {
+            var sorted= objectToSortedArray(params.filters, 'name', preferredFilters, false);
+            params.filters= liftPreferred(sorted, 'name', preferredFilters);
+        }
+    }
+
+    $('#left-nav').html(getParametersContent(data));
+    $('#accordion').unbind();
+    $('#accordion h3').unbind();
+    var options= accordionOptions;
+    if (currentParameter != null) {
+	options["active"]= getCurrentParamIndex(data);
+    }
+    $('#accordion').accordion(accordionOptions);
+    $.each(currentFilters, function(i,v) {
+	$('#'+v).attr('checked', 'checked'); 
+    });
+    $('#search-box').val(currentKeyword);
+    $(".filterValues input[type='checkbox']").click(keywordSearch);
+    $('#accordion h3').click(function() {
+	currentKeyword= "";
+	$('#search-box').val(currentKeyword);
+	$('#right-content-data').empty(); 
+	currentParameter= $(this).attr("uuid");
+	var opening= $(this).hasClass('ui-state-active');
+	if (opening) { 
+        $('#category-instructions').hide();
+	    currentFilters= [];
+	    getParameters({"id": currentParameter});
+	    getVariables({"id":currentParameter}); 
+	}
+	else {
+        $('#category-instructions').show();
+	    currentParameter= null;
+	}
+    });
+    $("#compare").click(openComparisonWindow);
 }
 function liftPreferred(array, key, preferredValues) {
     // Given an array of objects, move to the front the objects whose
@@ -114,55 +154,13 @@ function objectToSortedArray(object, key, preferredValues, reverse) {
 
     return sortable;
 }
-function setParameters(data) {    
-    // Sort filters before displaying.
-    // Ideally the back-end would provide us a sorted array to begin with.
-    for (var i= 0; i < data.parameters.length; i++) {
-        var params= data.parameters[i];
-        // Check for empty object per http://stackoverflow.com/a/2866221.
-        if (!$.isEmptyObject(params.filters)) {
-            var sorted= objectToSortedArray(params.filters, 'name', preferredFilters, false);
-            params.filters= liftPreferred(sorted, 'name', preferredFilters);
-        }
-    }
-
-    $('#left-nav').html(getParametersContent(data));
-    $('#accordion').unbind();
-    $('#accordion h3').unbind();
-    var options= accordionOptions;
-    if (currentParameter != null) {
-	options["active"]= getCurrentParamIndex(data);
-    }
-    $('#accordion').accordion(accordionOptions);
-    $.each(currentFilters, function(i,v) {
-	$('#'+v).attr('checked', 'checked'); 
-    });
-    $('#search-box').val(currentKeyword);
-    $(".filterValues input[type='checkbox']").click(keywordSearch);
-    $('#accordion h3').click(function() {
-	currentKeyword= "";
-	$('#search-box').val(currentKeyword);
-	$('#right-content').empty(); 
-	currentParameter= $(this).attr("uuid");
-	var opening= $(this).hasClass('ui-state-active');
-	if (opening) { 
-	    currentFilters= [];
-	    getParameters({"id": currentParameter});
-	    getVariables({"id":currentParameter}); 
-	}
-	else {
-	    currentParameter= null;
-	}
-    });
-    $("#compare").click(openComparisonWindow);
-}
 function getCurrentParamIndex(data) {
     var params= $.map(data["parameters"], function(x) { return x["parameter"]; });
     return $.inArray(currentParameter, params);
 }
 function getVariables(json) {
     $(".filterValues input[type='checkbox']").attr('checked', false);
-    $('#right-content').empty(); 
+    $('#right-content-data').empty(); 
     $.getJSON(variablesUrl, json).done(setVariableNames);
 }
 function keywordSearch() {
@@ -177,7 +175,7 @@ function keywordSearch() {
 function setVariableNames(data) {
     filterIndex= data.filterIndex;
     $('#compare').show();
-    $('#right-content').html(getVariablesContent(data));
+    $('#right-content-data').html(getVariablesContent(data));
     activateVarTableAccordion();
     $('#search-form').show();
     $('#search-box').val('');
@@ -188,7 +186,22 @@ function activateVarTableAccordion() {
     $("#content-table tr:first-child").show();
     $("#content-table tr.variableName").click(function(){
 	$(this).next().fadeToggle();
+	toggleArrow($(this).find('.variable-arrow'));
     });
+}
+function toggleArrow(arrow) {
+    // Code points per http://stackoverflow.com/a/5853994.
+    var RIGHT_ARROW_UNICODE= '\u25B6'; // Not used.
+    var DOWN_ARROW_UNICODE= '\u25BC';
+    var DOWN_ARROW_HTML= '&#9660;';
+    var RIGHT_ARROW_HTML= '&#9658;';
+
+    // Compare Unicode per http://stackoverflow.com/a/30020.
+    if (arrow.html() !== DOWN_ARROW_UNICODE) {
+        arrow.html(DOWN_ARROW_HTML);
+    } else {
+        arrow.html(RIGHT_ARROW_HTML);
+    }
 }
 function filterMap() {
     currentFilters= [];
@@ -241,24 +254,24 @@ function setInfo(data) {
     return false;
 }
 function renderInfoIfRequested(key) {
-    var val = getQueryVariable(key);
+    var val= getQueryVariable(key);
     if (val) {
         getInfo(val);
     }
 }
 function renderComparisonIfRequested(key) {
-    var val = getQueryVariable(key);
+    var val= getQueryVariable(key);
     if (val) {
-        var selectedVars = val.split(",");
+        var selectedVars= val.split(",");
         getComparison(selectedVars);
     }
 }
 // Per http://stackoverflow.com/q/901115/#comment17845348_901115.
 function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
+    var query= window.location.search.substring(1);
+    var vars= query.split("&");
+    for (var i= 0; i < vars.length; i++) {
+        var pair= vars[i].split("=");
         if (pair[0] === variable) {
             return pair[1];
         }
