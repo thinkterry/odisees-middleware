@@ -40,11 +40,6 @@ function setup() {
 	jQuery('html, body').animate({scrollTop: 0}, duration);
 	return false;
     });
-    $(".instruction").hide();
-    $(".show_hide").show();    
-    $('.show_hide').click(function(){
-	$(".instruction").fadeToggle();
-    });
     setTemplates();
     renderInfoIfRequested("variable"); // Must match "infolink" class in index.html.
     renderInfoIfRequested("uuid"); // Must match "infolink" class in index.html.
@@ -142,15 +137,17 @@ function setParameters(data) {
     $('#accordion h3').click(function() {
 	currentKeyword= "";
 	$('#search-box').val(currentKeyword);
-	$('#right-content').empty(); 
+	$('#right-content-data').empty(); 
 	currentParameter= $(this).attr("uuid");
 	var opening= $(this).hasClass('ui-state-active');
 	if (opening) { 
+        $('#category-instructions').hide();
 	    currentFilters= [];
 	    getParameters({"id": currentParameter});
 	    getVariables({"id":currentParameter}); 
 	}
 	else {
+        $('#category-instructions').show();
 	    currentParameter= null;
 	}
     });
@@ -162,7 +159,7 @@ function getCurrentParamIndex(data) {
 }
 function getVariables(json) {
     $(".filterValues input[type='checkbox']").attr('checked', false);
-    $('#right-content').empty(); 
+    $('#right-content-data').empty(); 
     $.getJSON(variablesUrl, json).done(setVariableNames);
 }
 function keywordSearch() {
@@ -177,7 +174,7 @@ function keywordSearch() {
 function setVariableNames(data) {
     filterIndex= data.filterIndex;
     $('#compare').show();
-    $('#right-content').html(getVariablesContent(data));
+    $('#right-content-data').html(getVariablesContent(data));
     activateVarTableAccordion();
     $('#search-form').show();
     $('#search-box').val('');
@@ -188,7 +185,22 @@ function activateVarTableAccordion() {
     $("#content-table tr:first-child").show();
     $("#content-table tr.variableName").click(function(){
 	$(this).next().fadeToggle();
+	toggleArrow($(this).find('.variable-arrow'));
     });
+}
+function toggleArrow(arrow) {
+    // Code points per http://stackoverflow.com/a/5853994.
+    var RIGHT_ARROW_UNICODE= '\u25B6'; // Not used.
+    var DOWN_ARROW_UNICODE= '\u25BC';
+    var DOWN_ARROW_HTML= '&#9660;';
+    var RIGHT_ARROW_HTML= '&#9658;';
+
+    // Compare Unicode per http://stackoverflow.com/a/30020.
+    if (arrow.html() !== DOWN_ARROW_UNICODE) {
+        arrow.html(DOWN_ARROW_HTML);
+    } else {
+        arrow.html(RIGHT_ARROW_HTML);
+    }
 }
 function filterMap() {
     currentFilters= [];

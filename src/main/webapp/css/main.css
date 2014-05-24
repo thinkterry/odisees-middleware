@@ -31,6 +31,10 @@ body {
 	text-shadow: none;
 }
 /*	Begin custom site CSS */
+#logo a {
+	/* Make entire image clickable. */
+	display: block;
+}
 #container {
 	width: 1000px;
 	min-width: 1000px;
@@ -65,12 +69,43 @@ input[type="search"] {
 #left-nav {
 	display: inline-block;
 	margin: 10px;
+	width: 285px;
+}
+.filter-instructions {
+	line-height: 20px;
+	padding: 10px auto 10px auto;
+	margin-bottom: 20px;
+}
+.variable-instructions {
+	margin-bottom: 8px;
 }
 #right-content {
 	display: inline-block;
 	vertical-align: top;
 	width: 680px;
 	margin: 12px 10px 10px 0;
+}
+#category-instructions {
+	line-height: 1.5;
+}
+#category-instructions p {
+	margin-bottom: 30px;
+}
+#usage {
+	padding: 10px 40px 40px 40px;
+	line-height: 1.5;
+}
+#usage h1, h2, h3, h4, h5, h6 {
+	line-height: 4;
+}
+#usage h2 {
+	font-size: 1.5em;
+}
+#usage h3 {
+	font-size: 1.2em;
+}
+#usage p {
+	line-height: 1.5;
 }
 #footer {
 	width: inherit;
@@ -90,6 +125,7 @@ input[type="search"] {
 
 #content-table {
 	font-size: 1em;
+	line-height: 1.35;
 	margin: 0px;
 	width: 680px;
 	text-align: left;
@@ -114,6 +150,10 @@ input[type="search"] {
 	background: #eeeeee;
 	border-top: 1px solid #fff;
 	color: #000;
+}
+#content-table .variable-arrow {
+	font-size: 50%;
+	margin-right: 8px;
 }
 #content-table tfoot td.rounded-foot-left {
 	background: #d7dfe7;
