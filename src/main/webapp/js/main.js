@@ -89,11 +89,9 @@ function setParameters(data) {
     $.each(currentFilters, function(i,v) {
 	$('#'+v).attr('checked', 'checked'); 
     });
-    $('#search-box').val(currentKeyword);
     $(".filterValues input[type='checkbox']").click(keywordSearch);
     $('#accordion h3').click(function() {
 	currentKeyword= "";
-	$('#search-box').val(currentKeyword);
 	$('#right-content-data').empty(); 
 	currentParameter= $(this).attr("uuid");
 	var opening= $(this).hasClass('ui-state-active');
@@ -166,7 +164,7 @@ function getVariables(json) {
 function keywordSearch() {
     $('#vars').empty(); 
     var params= filterMap();
-    currentKeyword= $('#search-box').val();
+    currentKeyword= "";
     params["id"]= currentParameter;
     params["keyword"]= currentKeyword;
     getParameters(params);
@@ -178,8 +176,6 @@ function setVariableNames(data) {
     $('#right-content-data').html(getVariablesContent(data));
     activateVarTableAccordion();
     $('#search-form').show();
-    $('#search-box').val('');
-    $('#keyword-search').unbind().click(keywordSearch);
 }
 function activateVarTableAccordion() {
     $("#content-table > tbody > tr:not(.variableName)").hide();

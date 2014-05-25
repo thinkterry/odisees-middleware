@@ -49,14 +49,6 @@ body {
 .logo {
 	float: left;
 }
-.search {
-	float: right;
-	margin-top: 44px;
-}
-input[type="search"] {
-	width: 150px;
-	height: 33px;
-}
 #content_box {
 	width: inherit;
 	margin-top: 10px;
@@ -246,37 +238,6 @@ input[type="search"] {
 }
 .show_hide {
 	display: none;
-}
-/* Search Button (header) */
-.sbtn {
-	font-family: 'Droid Sans', sans-serif;
-	color: #ffffff;
-	font-size: 16px;
-	background: #46a0f3;
-	padding: 6px 20px 6px 20px;
-	text-decoration: none;
-	border: none;
-	cursor: pointer;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-}
-[if IE] .sbtn {  
-	font-family: 'Droid Sans', sans-serif;
-	color: #ffffff;
-	font-size: 16px;
-	background: #46a0f3;
-	padding: 6px 20px 6px 20px;
-	text-decoration: none;
-	border: none;
-	cursor: pointer;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-}  
-.sbtn:hover {
-	background: #3186d4;
-	text-decoration: none;
 }
 /* Data Tables (Right Side) with Sorting and Toggles */
 #report {
