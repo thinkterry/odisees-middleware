@@ -139,10 +139,11 @@
 	    {{/each}}
 	  </thead>
 	  <tbody>
-	    {{#each variables}}
+	    {{#each quickFacts}}
 	    <tr>
-	      {{#each quickFacts}}
-	      <td>{{value}}</td>
+	      <td>{{relation}}</td>
+	      {{#each variables}}
+	      <td>{{this}}</td>
 	      {{/each}}
 	    </tr>
 	    {{/each}}

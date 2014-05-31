@@ -232,9 +232,34 @@ function getComparison(selectedVars) {
 }
 function setComparison(data) {
     // Replace content of entire page per http://stackoverflow.com/a/4292640.
-    document.write(getComparisonContent(data));
+    document.write(getComparisonContent(transposeAndSimplify(data)));
     document.close();
     return false;
+}
+function transposeAndSimplify(data) {
+    // Transpose the data and strip out the unnecessary
+    // parts for easier loading into the HTML table, which
+    // is built row-by-row, not column-by-column.
+    var relations = [];
+    relations.push(data.variables[0].quickFacts[0].relation);
+    for (var i = 0; i < data.variables.length; i++) {
+        relations.push(data.variables[i].name);
+    }
+    var quickFacts = [];
+    for (var i = 0; i < data.variables[0].quickFacts.length; i++) {
+        if (i === 0) {
+            continue;  // Already added above.
+        }
+        var variables = [];
+        for (var j = 0; j < data.variables.length; j++ ) {
+            variables.push(data.variables[j].quickFacts[i].value);
+        }
+        quickFacts.push({ relation: [data.variables[0].quickFacts[i].relation],
+                          variables: variables });
+    }
+    var transposed = { relations: relations,
+                       quickFacts: quickFacts };
+    return transposed;
 }
 function getInfo(item) {
     $.getJSON(infoUrl+"/"+item, setInfo);
