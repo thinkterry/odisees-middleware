@@ -111,7 +111,6 @@ table.display {
 	 *
 	 * If you want that effect I'd suggest setting a border-top/left on th/td's and 
 	 * then filling in the gaps with other borders. */
-	text-align: center;
 	border: solid #ccc 1px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
@@ -120,12 +119,18 @@ table.display {
 	-moz-box-shadow: 0 1px 1px #ccc;
 	box-shadow: 0 1px 1px #ccc;
 }
-table.display thead th {
-	padding: 3px 18px 3px 10px;
-	border-bottom: 1px solid black;
+table.display th, table.display td {
+	text-align: left;
+	border-bottom: 1px solid #eee;
+}
+table.display th:first-child,
+table.display td:first-child {
 	font-weight: bold;
 	cursor: pointer;
  * cursor: hand;
+}
+table.display thead th {
+	padding: 3px 18px 3px 10px;
 }
 table.display tfoot th {
 	padding: 3px 18px 3px 10px;
