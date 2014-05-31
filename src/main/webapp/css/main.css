@@ -138,6 +138,11 @@ body {
 	color: #fff;
 	background: #46a0f3;
 }
+/* Set height of accordion item per http://stackoverflow.com/a/15035742. */
+#accordion .ui-accordion-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
 #content-table td {
 	padding: 8px;
 	background: #eeeeee;
@@ -145,7 +150,7 @@ body {
 	color: #000;
 }
 #content-table .variable-arrow {
-	font-size: 50%;
+	font-size: 75%;
 	margin-right: 8px;
 }
 #content-table tfoot td.rounded-foot-left {
